@@ -49,4 +49,54 @@ class TestBasicConcept:
         # 또 바뀔 수 있음
         score = 85
         assert score == 85
-        
+
+    def test_no_type_declaration_needed(self):
+        """Python은 변수 타입을 미리 선언하지 않아도 됩니다 (동적 타이핑)"""
+        # Java나 C에서는: int number = 10;
+        # Python에서는 그냥:
+        number = 10
+
+        # Python이 알아서 "아, 이건 정수구나" 파악함
+        assert type(number) == int
+
+    def test_type_can_change(self):
+        """같은 변수에 다른 타입의 값을 넣을 수 있습니다"""
+        # 처음에는 숫자
+        data = 42
+        assert type(data) == int
+
+        # 이제 문자열로 바꿈 (다른 언어에서는 에러나는 경우가 많음!)
+        data = "마흔둘"
+        assert type(data) == str
+
+        # 리스트로도 바꿀 수 있음
+        data = [4, 2]
+        assert type(data) == list
+
+    def test_check_type_with_type_function(self):
+        """type() 함수로 변수의 타입을 확인할 수 있습니다"""
+        integer_var = 10
+        float_var = 3.14
+        string_var = "hello"
+        bool_var = True
+
+        assert type(integer_var) == int  # 정수
+        assert type(float_var) == float  # 실수 (소수점)
+        assert type(string_var) == str  # 문자열
+        assert type(bool_var) == bool  # 불리언 (참/거짓)
+
+    def test_isinstance_for_type_checking(self):
+        """isinstance()는 타입 체크의 더 좋은 방법입니다"""
+        number = 42
+
+        # type() == 보다 isinstance()를 더 권장
+        # 이유: 상속 관계도 체크해줌 (OOP에서 배울 내용)
+        assert isinstance(number, int)
+        assert isinstance(3.14, float)
+        assert isinstance("hello", str)
+
+        # 여러 타입 중 하나인지 확인도 가능
+        value = 100
+        assert isinstance(value, (int, float))  # int 또는 float인지
+
+    

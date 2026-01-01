@@ -153,3 +153,57 @@ class TestBasicConcept:
         assert age == 30
         assert city == "서울"
 
+
+class TestPracticalUsage:
+    """실무 활용 - 실제로 이렇게 씁니다"""
+
+    def test_counter_pattern(self):
+        """카운터 패턴 - 숫자 세기"""
+        count = 0
+
+        # 무언가를 셀 때
+        count = count + 1  # 1 증가
+        count += 1  # 위와 같음 (축약형)
+        count += 1
+
+        assert count == 3
+
+    def test_accumulator_pattern(self):
+        """누적기 패턴 - 값 모으기"""
+        total = 0
+
+        # 점수들을 더하기
+        scores = [85, 90, 78, 92]
+        for score in scores:
+            total += score
+
+        assert total == 345
+
+    def test_flag_pattern(self):
+        """플래그 패턴 - 상태 표시"""
+        is_logged_in = False
+        has_permission = False
+
+        # 로그인 성공!
+        is_logged_in = True
+
+        # 권한 체크
+        if is_logged_in:
+            has_permission = True
+
+        assert is_logged_in is True
+        assert has_permission is True
+
+    def test_temporary_variable(self):
+        """임시 변수 - 계산 중간 결과 저장"""
+        price = 10000
+        quantity = 3
+
+        # 중간 계산 결과를 저장하면 코드가 읽기 쉬워짐
+        subtotal = price * quantity
+        tax = subtotal * 0.1
+        total = subtotal + tax
+
+        assert subtotal == 30000
+        assert tax == 3000
+        assert total == 33000

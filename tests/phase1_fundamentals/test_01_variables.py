@@ -99,4 +99,57 @@ class TestBasicConcept:
         value = 100
         assert isinstance(value, (int, float))  # int 또는 float인지
 
-    
+    def test_assign_same_value_to_multiple(self):
+        """여러 변수에 같은 값을 한 번에 할당"""
+        # 모두 0으로 초기화하고 싶을 때
+        a = b = c = 0
+
+        assert a == 0
+        assert b == 0
+        assert c == 0
+
+    def test_assign_multiple_values(self):
+        """여러 변수에 각각 다른 값을 한 줄로 할당"""
+        # 콤마로 구분해서 한 줄에 여러 변수 할당
+        name, age, city = "김파이썬", 25, "서울"
+
+        assert name == "김파이썬"
+        assert age == 25
+        assert city == "서울"
+
+    def test_swap_values(self):
+        """두 변수의 값 교환 - Python의 우아한 방법"""
+        a = 10
+        b = 20
+
+        # 다른 언어에서는 임시 변수가 필요:
+        # temp = a
+        # a = b
+        # b = temp
+
+        # Python에서는 한 줄로 끝!
+        a, b = b, a
+
+        assert a == 20
+        assert b == 10
+
+    def test_unpack_from_list(self):
+        """리스트의 값들을 변수에 풀어서 담기 (언패킹)"""
+        # 리스트에 담긴 값들을 각각의 변수로 분리
+        coordinates = [37.5665, 126.9780]  # 서울 좌표
+
+        latitude, longitude = coordinates
+
+        assert latitude == 37.5665
+        assert longitude == 126.9780
+
+    def test_unpack_from_tuple(self):
+        """튜플 언패킹"""
+        person = ("홍길동", 30, "서울")
+
+        name, age, city = person
+
+        assert name == "홍길동"
+        assert age == 30
+        assert city == "서울"
+

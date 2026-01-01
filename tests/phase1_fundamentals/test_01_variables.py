@@ -207,3 +207,32 @@ class TestPracticalUsage:
         assert subtotal == 30000
         assert tax == 3000
         assert total == 33000
+
+    def test_local_variable_in_function(self):
+        """함수 안에서 만든 변수는 함수 안에서만 존재 (지역 변수)"""
+
+        def greet():
+            # local_message는 함수 안에서만 존재
+            local_message = "함수 안녕"
+            return local_message
+
+        result = greet()
+        assert result == "함수 안녕"
+
+        # 함수 밖에서 local_message를 쓰려고 하면 에러 발생
+        # print(local_message)  # NameError!
+
+    def test_variable_shadowing(self):
+        """같은 이름의 변수가 다른 범위에 있을 수 있음 (섀도잉)"""
+        message = "바깥 메시지"
+
+        def inner():
+            # 함수 안에서 새로운 message 변수 생성
+            message = "안쪽 메시지"
+            return message
+
+        # 함수 안의 message와 바깥의 message는 다른 변수
+        assert inner() == "안쪽 메시지"
+        assert message == "바깥 메시지"
+
+    

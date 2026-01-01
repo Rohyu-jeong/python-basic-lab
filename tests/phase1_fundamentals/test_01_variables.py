@@ -291,3 +291,142 @@ class TestPracticalUsage:
         assert t == timeout_milliseconds
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_case_sensitive(self):
+        """변수 이름은 대소문자를 구분합니다!"""
+        name = "소문자"
+        Name = "첫글자대문자"
+        NAME = "전부대문자"
+
+        # 모두 다른 변수임!
+        assert name != Name
+        assert Name != NAME
+        assert name != NAME
+
+    def test_cannot_start_with_number(self):
+        """변수 이름은 숫자로 시작할 수 없습니다"""
+        # 이렇게 하면 에러:
+        # 1st_place = "금메달"  # SyntaxError!
+
+        # 대신 이렇게:
+        first_place = "금메달"
+        place_1st = "금메달"
+
+        assert first_place == "금메달"
+        assert place_1st == "금메달"
+
+    def test_invalid_variable_names(self):
+        """사용할 수 없는 변수 이름들"""
+        # 아래는 모두 SyntaxError:
+        # 1player = "NO"      # 숫자로 시작 불가
+        # user-name = "NO"    # 하이픈(-) 불가
+        # user name = "NO"    # 공백 불가
+        # class = "NO"        # 예약어 불가
+
+        # 올바른 대안:
+        player1 = "OK"
+        user_name = "OK"
+        klass = "OK"  # class 대신 klass 사용하기도 함
+
+        assert player1 == "OK"
+        assert user_name == "OK"
+
+    def test_reserved_keywords(self):
+        """예약어는 변수 이름으로 사용할 수 없습니다"""
+        import keyword
+
+        # Python 예약어 목록 확인
+        reserved = keyword.kwlist
+
+        # 이런 단어들은 변수 이름으로 못 씀
+        assert "if" in reserved
+        assert "for" in reserved
+        assert "while" in reserved
+        assert "class" in reserved
+        assert "def" in reserved
+        assert "return" in reserved
+        assert "True" in reserved
+        assert "False" in reserved
+        assert "None" in reserved
+        assert "and" in reserved
+        assert "or" in reserved
+        assert "not" in reserved
+
+        # 예: if = 10  # SyntaxError!
+
+    def test_avoid_builtin_names(self):
+        """내장 함수 이름을 변수로 쓰지 마세요 (에러는 안 나지만 위험!)"""
+        # 이렇게 하면 안 됨 (에러는 안 나지만 내장 함수를 덮어씀)
+        # list = [1, 2, 3]  # 이제 list() 함수를 못 씀!
+        # print = "hello"   # 이제 print() 함수를 못 씀!
+        # str = "text"      # 이제 str() 함수를 못 씀!
+        # id = 123          # 이제 id() 함수를 못 씀!
+
+        # 대신 이렇게:
+        my_list = [1, 2, 3]
+        message = "hello"
+        text = "text"
+        user_id = 123
+
+        assert my_list == [1, 2, 3]
+        assert message == "hello"
+
+    def test_undefined_variable(self):
+        """정의하지 않은 변수를 사용하면 NameError"""
+        import pytest
+
+        # undefined_var라는 변수는 만든 적 없음
+        with pytest.raises(NameError):
+            # 이 줄에서 NameError 발생
+            _ = undefined_var  # noqa: F821
+
+    def test_assignment_vs_comparison(self):
+        """= (할당)과 == (비교)를 혼동하지 마세요"""
+        x = 10  # 할당: x에 10을 넣음
+
+        # x == 10은 비교: x가 10인지 확인 (True/False 반환)
+        assert (x == 10) is True
+        assert (x == 5) is False
+
+        # 조건문에서 =를 쓰면 에러!
+        # if x = 10:  # SyntaxError!
+
+        # 올바른 방법:
+        if x == 10:
+            result = "correct"
+        assert result == "correct"
+
+    def test_mutable_default_trap(self):
+        """가변 객체를 여러 변수에 할당할 때 주의"""
+        # 같은 리스트를 가리킴
+        a = b = [1, 2, 3]
+
+        # a를 수정하면 b도 바뀜!
+        a.append(4)
+
+        assert a == [1, 2, 3, 4]
+        assert b == [1, 2, 3, 4]  # b도 바뀌어 버림!
+        assert a is b  # 같은 객체를 가리키고 있음
+
+        # 독립적인 리스트를 원하면:
+        c = [1, 2, 3]
+        d = [1, 2, 3]  # 따로 생성
+
+        c.append(4)
+        assert c == [1, 2, 3, 4]
+        assert d == [1, 2, 3]  # d는 영향 없음
+
+    def test_none_assignment(self):
+        """None은 '값이 없음'을 나타내는 특별한 값"""
+        # 변수를 선언만 하고 나중에 값을 넣고 싶을 때
+        result = None
+
+        assert result is None
+        assert result == None  # 동작하지만 is None이 권장됨
+
+        # 나중에 값 할당
+        result = "완료"
+        assert result is not None
+

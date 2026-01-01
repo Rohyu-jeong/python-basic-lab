@@ -430,3 +430,157 @@ class TestEdgeCases:
         result = "완료"
         assert result is not None
 
+
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_underscore_for_unused(self):
+        """사용하지 않는 값은 언더스코어(_)로 표시"""
+        # 좌표에서 x만 필요하고 y는 필요 없을 때
+        coordinates = (100, 200)
+
+        x, _ = coordinates  # _는 "이 값은 안 쓸 거예요"라는 표시
+
+        assert x == 100
+
+    def test_multiple_underscore(self):
+        """*_로 여러 값을 한 번에 무시"""
+        data = (1, 2, 3, 4, 5)
+
+        first, *_, last = data  # 처음과 마지막만 필요
+
+        assert first == 1
+        assert last == 5
+
+    def test_star_for_rest(self):
+        """*로 나머지 값들을 리스트로 모으기"""
+        numbers = [1, 2, 3, 4, 5]
+
+        first, *rest = numbers
+        assert first == 1
+        assert rest == [2, 3, 4, 5]
+
+        first, *middle, last = numbers
+        assert first == 1
+        assert middle == [2, 3, 4]
+        assert last == 5
+
+        *beginning, last = numbers
+        assert beginning == [1, 2, 3, 4]
+        assert last == 5
+
+    def test_augmented_assignment(self):
+        """복합 할당 연산자 - 코드를 짧게"""
+        x = 10
+
+        x += 5  # x = x + 5와 같음
+        assert x == 15
+
+        x -= 3  # x = x - 3과 같음
+        assert x == 12
+
+        x *= 2  # x = x * 2와 같음
+        assert x == 24
+
+        x //= 4  # x = x // 4와 같음 (정수 나눗셈)
+        assert x == 6
+
+        x **= 2  # x = x ** 2와 같음 (거듭제곱)
+        assert x == 36
+
+        x %= 10  # x = x % 10과 같음 (나머지)
+        assert x == 6
+
+    def test_chained_comparison(self):
+        """연속 비교 - Python만의 편리한 문법"""
+        age = 25
+
+        # 다른 언어에서는: age >= 20 and age < 30
+        # Python에서는 수학처럼 쓸 수 있음!
+        is_in_twenties = 20 <= age < 30
+
+        assert is_in_twenties is True
+
+        # 여러 개도 가능
+        x = 5
+        assert 1 < x < 10 < 100
+        assert 0 <= x <= 10
+
+    def test_id_function(self):
+        """id() - 변수가 가리키는 메모리 주소(고유 번호) 확인"""
+        a = [1, 2, 3]
+        b = a  # b는 a와 같은 리스트를 가리킴
+        c = [1, 2, 3]  # c는 새로운 리스트
+
+        # a와 b는 같은 객체를 가리킴
+        assert id(a) == id(b)
+
+        # c는 값은 같지만 다른 객체
+        assert a == c  # 값은 같음
+        assert id(a) != id(c)  # 하지만 다른 객체
+
+        # is 연산자로도 같은 객체인지 확인 가능
+        assert a is b
+        assert a is not c
+
+    def test_small_integer_caching(self):
+        """Python은 작은 정수(-5~256)를 캐싱합니다"""
+        # 작은 정수는 같은 객체를 재사용
+        a = 100
+        b = 100
+        assert a is b  # 같은 객체!
+
+        # 큰 정수는 새로 생성될 수 있음
+        x = 1000
+        y = 1000
+        # x is y는 True일 수도 False일 수도 있음 (구현에 따라 다름)
+        # 하지만 값 비교는 항상 True
+        assert x == y
+
+    def test_variable_deletion(self):
+        """del로 변수 삭제하기"""
+        import pytest
+
+        x = 10
+        assert x == 10
+
+        del x  # 변수 삭제
+
+        # 삭제 후 접근하면 NameError
+        with pytest.raises(NameError):
+            _ = x  # noqa: F821
+
+    def test_multiple_return_unpacking(self):
+        """함수의 여러 반환값을 언패킹"""
+
+        def get_user_info():
+            return "홍길동", 30, "서울"
+
+        # 함수 반환값을 바로 언패킹
+        name, age, city = get_user_info()
+
+        assert name == "홍길동"
+        assert age == 30
+        assert city == "서울"
+
+    def test_enumerate_unpacking(self):
+        """enumerate와 함께 언패킹 (반복문에서 자주 사용)"""
+        fruits = ["사과", "바나나", "체리"]
+
+        result = []
+        for index, fruit in enumerate(fruits):
+            result.append(f"{index}: {fruit}")
+
+        assert result == ["0: 사과", "1: 바나나", "2: 체리"]
+
+    def test_dict_items_unpacking(self):
+        """딕셔너리 items()와 함께 언패킹"""
+        scores = {"국어": 90, "영어": 85, "수학": 95}
+
+        result = []
+        for subject, score in scores.items():
+            result.append(f"{subject}: {score}점")
+
+        assert "국어: 90점" in result
+        assert "영어: 85점" in result
+        assert "수학: 95점" in result

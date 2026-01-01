@@ -235,4 +235,59 @@ class TestPracticalUsage:
         assert inner() == "안쪽 메시지"
         assert message == "바깥 메시지"
 
-    
+    def test_valid_variable_names(self):
+        """올바른 변수 이름 예시"""
+        # 소문자와 언더스코어 (snake_case) - Python 권장 스타일
+        user_name = "홍길동"
+        total_count = 100
+        is_valid = True
+
+        # 숫자를 포함할 수 있음 (단, 시작은 안 됨)
+        player1_score = 95
+        item2 = "검"
+
+        # 대문자도 가능 (보통 클래스 이름에 사용)
+        MyVariable = "OK"
+
+        # 언더스코어로 시작 (관례상 내부용)
+        _private = "internal"
+
+        # 한글도 가능 (하지만 권장하지 않음)
+        이름 = "김파이썬"
+
+        assert user_name == "홍길동"
+        assert player1_score == 95
+        assert 이름 == "김파이썬"
+        assert _private == "internal"
+
+    def test_naming_conventions(self):
+        """Python 커뮤니티의 이름 짓기 관례 (PEP 8)"""
+        # 변수와 함수: snake_case (소문자 + 언더스코어)
+        my_variable = 1
+        user_age = 25
+
+        # 상수: SCREAMING_SNAKE_CASE (대문자 + 언더스코어)
+        MAX_SIZE = 100
+        PI = 3.14159
+
+        # 클래스: PascalCase (단어 첫 글자마다 대문자)
+        # MyClass, UserProfile (이건 클래스 챕터에서 배움)
+
+        assert my_variable == 1
+        assert MAX_SIZE == 100
+
+    def test_meaningful_names(self):
+        """의미 있는 이름을 사용하세요"""
+        # 나쁜 예 - 무슨 뜻인지 모름
+        x = 5
+        t = 1000
+
+        # 좋은 예 - 이름만 봐도 무엇인지 알 수 있음
+        num_students = 5
+        timeout_milliseconds = 1000
+
+        # 테스트는 통과하지만, 좋은 이름이 코드 이해에 도움됨
+        assert x == num_students
+        assert t == timeout_milliseconds
+
+

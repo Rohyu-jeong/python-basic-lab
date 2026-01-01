@@ -3,7 +3,7 @@
 > Python 문법의 기초부터 심화까지, 테스트로 배우는 Python 입문서
 
 [![Python Version](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
-[![pytest Version](https://img.shields.io/badge/pytest-8.0-green.svg)](https://docs.pytest.org/)
+[![pytest Version](https://img.shields.io/badge/pytest-9.0-green.svg)](https://docs.pytest.org/)
 
 ## 📌 소개
 

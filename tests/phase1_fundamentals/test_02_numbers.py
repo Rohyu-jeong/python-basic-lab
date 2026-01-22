@@ -128,3 +128,151 @@ class TestBasicConcept:
         assert 0b11111111 == 0o377 == 0xFF == 255
 
 
+class TestPracticalUsage:
+    """실무 활용 - 실제로 이렇게 씁니다"""
+
+    def test_even_odd_check(self):
+        """짝수/홀수 판별 - 나머지 연산 활용"""
+        number = 7
+        is_even = number % 2 == 0  # 2로 나눈 나머지가 0이면 짝수
+        is_odd = number % 2 == 1  # 2로 나눈 나머지가 1이면 홀수
+
+        assert is_odd is True
+        assert is_even is False
+
+        # 여러 숫자 판별
+        assert 10 % 2 == 0  # 짝수
+        assert 15 % 2 == 1  # 홀수
+
+    def test_cyclic_index(self):
+        """순환 인덱스 - 요일, 시간 등에 활용"""
+        # 실전 활용: 순환 인덱스 (0, 1, 2, 0, 1, 2, ...)
+        days = ["월", "화", "수", "목", "금", "토", "일"]
+
+        # 오늘이 월요일(0)이고 10일 후는?
+        today = 0
+        day_number = 10
+        future_day = (today + day_number) % 7
+        assert future_day == 3  # 목요일
+
+        # 시계 계산: 현재 10시, 5시간 후는?
+        current_hour = 10
+        hours_later = 5
+        new_hour = (current_hour + hours_later) % 12
+        assert new_hour == 3  # 3시
+
+    def test_divmod_time_conversion(self):
+        """divmod()로 시간 변환하기"""
+        # divmod(a, b)는 (a // b, a % b)를 튜플로 반환
+        quotient, remainder = divmod(17, 5)
+        assert quotient == 3  # 몫
+        assert remainder == 2  # 나머지
+
+        # 실전 활용: 초를 시:분:초로 변환
+        total_seconds = 3725  # 3725초
+
+        minutes, seconds = divmod(total_seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+
+        assert hours == 1
+        assert minutes == 2
+        assert seconds == 5
+        # 3725초 = 1시간 2분 5초
+
+    def test_discount_calculation(self):
+        """할인가 계산"""
+        original_price = 50000
+        discount_percent = 30
+
+        discount_price = original_price * (1 - discount_percent / 100)
+        assert discount_price == 35000.0
+
+        # 다른 방식
+        discount_amount = original_price * discount_percent / 100
+        final_price = original_price - discount_amount
+        assert final_price == 35000.0
+
+    def test_average_calculation(self):
+        """평균 계산"""
+        scores = [85, 92, 78, 96, 88]
+        average = sum(scores) / len(scores)
+        assert average == 87.8
+
+        # 반올림해서 정수로
+        rounded_avg = round(average)
+        assert rounded_avg == 88
+
+    def test_circle_area(self):
+        """원의 넓이 계산"""
+        radius = 5
+        area = math.pi * radius**2
+        assert round(area, 2) == 78.54
+
+        # 둘레
+        circumference = 2 * math.pi * radius
+        assert round(circumference, 2) == 31.42
+
+    def test_pythagorean_theorem(self):
+        """피타고라스 정리 - 직각삼각형 빗변"""
+        a, b = 3, 4
+        c = math.sqrt(a**2 + b**2)
+        assert c == 5.0
+
+        # math.hypot()을 사용하면 더 간단
+        assert math.hypot(3, 4) == 5.0
+
+    def test_compound_interest(self):
+        """복리 이자 계산"""
+        # A = P(1 + r/n)^(nt)
+        principal = 1000000  # 원금 100만원
+        rate = 0.05  # 연 5%
+        times_per_year = 12  # 월복리
+        years = 3  # 3년
+
+        amount = principal * (1 + rate / times_per_year) ** (times_per_year * years)
+        assert round(amount) == 1161617  # 약 116만원
+
+    def test_number_formatting(self):
+        """숫자 포맷팅 - 보기 좋게 출력하기"""
+        number = 1234567.89
+
+        # 천 단위 구분자
+        formatted = f"{number:,}"
+        assert formatted == "1,234,567.89"
+
+        # 소수점 자릿수 지정
+        pi = 3.14159265
+        assert f"{pi:.2f}" == "3.14"  # 소수점 2자리
+        assert f"{pi:.4f}" == "3.1416"  # 소수점 4자리
+
+        # 고정 너비 (공백 채움)
+        assert f"{42:5d}" == "   42"  # 5자리, 오른쪽 정렬
+        assert f"{42:<5d}" == "42   "  # 5자리, 왼쪽 정렬
+        assert f"{42:05d}" == "00042"  # 5자리, 0으로 채움
+
+        # 퍼센트
+        ratio = 0.8567
+        assert f"{ratio:.1%}" == "85.7%"
+
+    def test_convert_bases(self):
+        """진수 변환 함수들"""
+        number = 42
+
+        # bin(): 2진수 문자열
+        assert bin(number) == "0b101010"
+
+        # oct(): 8진수 문자열
+        assert oct(number) == "0o52"
+
+        # hex(): 16진수 문자열
+        assert hex(number) == "0x2a"
+
+        # 접두사 없이 얻고 싶다면
+        assert bin(number)[2:] == "101010"
+        assert format(number, "b") == "101010"
+
+        # 문자열을 특정 진수로 해석
+        assert int("1010", 2) == 10  # 2진수 "1010" → 10
+        assert int("ff", 16) == 255  # 16진수 "ff" → 255
+
+

@@ -276,3 +276,117 @@ class TestPracticalUsage:
         assert int("ff", 16) == 255  # 16진수 "ff" → 255
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_float_precision_trap(self):
+        """실수의 정밀도 문제 - 컴퓨터는 소수를 정확히 저장 못해요!"""
+        # 컴퓨터는 2진수를 쓰기 때문에 일부 소수를 정확히 표현 못합니다
+        # 이건 Python만의 문제가 아니라 모든 프로그래밍 언어의 문제예요
+
+        result = 0.1 + 0.2
+        # 놀랍게도 정확히 0.3이 아닙니다!
+        assert result != 0.3  # 0.30000000000000004 같은 값이 나옴
+
+        # 해결책 1: 근사값 비교 (차이가 매우 작으면 같다고 판단)
+        assert abs(result - 0.3) < 0.0001
+
+        # 해결책 2: math.isclose() 사용 (권장)
+        assert math.isclose(result, 0.3)
+
+        # 해결책 3: 정확한 계산이 필요하면 Decimal 모듈 사용
+        from decimal import Decimal
+
+        precise = Decimal("0.1") + Decimal("0.2")
+        assert precise == Decimal("0.3")
+
+    def test_division_always_float(self):
+        """나눗셈(/)은 항상 float를 반환"""
+        # 정수끼리 나눠도 float!
+        result = 10 / 2
+        assert result == 5.0
+        assert type(result) == float  # int가 아님!
+
+        # 정수 결과가 필요하면 // 사용
+        result_int = 10 // 2
+        assert result_int == 5
+        assert type(result_int) == int
+
+    def test_int_truncation_not_rounding(self):
+        """int()는 반올림이 아니라 버림!"""
+        # int()는 소수점 아래를 그냥 버립니다 (0 방향으로)
+        assert int(3.9) == 3  # 반올림이면 4겠지만, 버림이라 3
+        assert int(3.1) == 3
+
+        # 음수도 0 방향으로 버림
+        assert int(-3.9) == -3  # -4가 아님!
+        assert int(-3.1) == -3
+
+        # 반올림을 원하면 round() 사용
+        assert round(3.9) == 4
+        assert round(3.1) == 3
+
+    def test_bankers_rounding(self):
+        """Python의 round()는 '은행원 반올림'을 사용"""
+        # 정확히 0.5일 때 가장 가까운 '짝수'로 반올림
+        # 일반적인 사사오입과 다릅니다!
+
+        assert round(0.5) == 0  # 0.5 → 0 (짝수)
+        assert round(1.5) == 2  # 1.5 → 2 (짝수)
+        assert round(2.5) == 2  # 2.5 → 2 (짝수) - 3이 아님!
+        assert round(3.5) == 4  # 3.5 → 4 (짝수)
+
+        # 0.5가 아닌 경우는 일반적인 반올림
+        assert round(2.4) == 2
+        assert round(2.6) == 3
+
+    def test_negative_division_gotcha(self):
+        """음수 나눗셈 주의"""
+        # // 는 항상 "내림" (더 작은 정수 방향)
+        assert 7 // 3 == 2  # 2.33... → 2
+        assert -7 // 3 == -3  # -2.33... → -3 (내림이라 -3)
+
+        # % 결과의 부호는 나누는 수의 부호를 따름
+        assert 7 % 3 == 1
+        assert -7 % 3 == 2  # -1이 아님! (3 - 1 = 2)
+        assert 7 % -3 == -2
+        assert -7 % -3 == -1
+
+    def test_operator_precedence_trap(self):
+        """연산자 우선순위 함정"""
+        # ** 는 오른쪽에서 왼쪽으로 결합
+        assert 2**3**2 == 512  # 2^(3^2) = 2^9 = 512, (2^3)^2 = 64가 아님!
+
+        # 음수 거듭제곱 주의!
+        assert -2**2 == -4  # -(2**2) = -4
+        assert (-2) ** 2 == 4  # (-2) ** 2 = 4
+
+        # 헷갈리면 괄호 사용!
+        assert (2**3) ** 2 == 64
+
+    def test_zero_division(self):
+        """0으로 나누기"""
+        import pytest
+
+        # 정수/실수를 0으로 나누면 ZeroDivisionError
+        with pytest.raises(ZeroDivisionError):
+            result = 10 / 0
+
+        with pytest.raises(ZeroDivisionError):
+            result = 10 // 0
+
+        with pytest.raises(ZeroDivisionError):
+            result = 10 % 0
+
+    def test_very_large_float(self):
+        """float의 범위 제한"""
+        # float는 크기 제한이 있음 (약 1.8 * 10^308)
+        # 너무 크면 inf(무한대)가 됨
+        huge = 1e308
+        assert huge * 10 == float("inf")
+
+        # int는 크기 제한 없음 (Python의 장점!)
+        very_big = 10**1000  # 이건 가능
+        assert type(very_big) == int
+
+

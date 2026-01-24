@@ -390,3 +390,179 @@ class TestEdgeCases:
         assert type(very_big) == int
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_underscore_separator(self):
+        """큰 숫자는 언더스코어로 가독성 UP"""
+        # Python 3.6+에서 숫자 사이에 _ 사용 가능
+        million = 1_000_000
+        billion = 1_000_000_000
+        credit_card = 1234_5678_9012_3456
+
+        assert million == 1000000
+        assert billion == 1000000000
+        assert credit_card == 1234567890123456
+
+        # 2진수, 16진수에도 사용 가능
+        binary = 0b1111_0000
+        hexa = 0xFF_FF
+
+        assert binary == 240
+        assert hexa == 65535
+
+    def test_compound_assignment_shortcut(self):
+        """복합 대입 연산자로 코드 줄이기"""
+        x = 10
+
+        x += 5  # x = x + 5
+        assert x == 15
+
+        x -= 3  # x = x - 3
+        assert x == 12
+
+        x *= 2  # x = x * 2
+        assert x == 24
+
+        x //= 5  # x = x // 5
+        assert x == 4
+
+        x **= 2  # x = x ** 2
+        assert x == 16
+
+        x %= 3  # x = x % 3
+        assert x == 1
+
+    def test_useful_math_functions(self):
+        """자주 쓰는 math 함수들"""
+        # 올림/내림/버림
+        assert math.ceil(3.2) == 4  # 올림 (ceiling)
+        assert math.floor(3.8) == 3  # 내림 (floor)
+        assert math.trunc(3.8) == 3  # 버림 (0 방향으로)
+        assert math.trunc(-3.8) == -3  # 음수 버림
+
+        # 제곱근
+        assert math.sqrt(16) == 4.0
+
+        # 로그
+        assert math.log(100, 10) == 2.0  # log₁₀(100) = 2
+        assert math.log2(8) == 3.0  # log₂(8) = 3
+        assert math.log10(1000) == 3.0  # log₁₀(1000) = 3
+
+        # 상수
+        assert math.pi == 3.141592653589793
+        assert math.e == 2.718281828459045
+
+    def test_abs_for_distance(self):
+        """abs()로 거리/차이 계산"""
+        # 두 점 사이의 거리 (방향 무관)
+        point_a = 10
+        point_b = 3
+        distance = abs(point_a - point_b)
+        assert distance == 7
+
+        # 순서 바꿔도 같음
+        assert abs(point_b - point_a) == 7
+
+        # 온도 차이
+        temp1 = -5
+        temp2 = 10
+        diff = abs(temp1 - temp2)
+        assert diff == 15
+
+    def test_min_max_with_key(self):
+        """min/max에 key 함수 활용"""
+        # 절댓값이 가장 작은/큰 수 찾기
+        numbers = [-10, 3, -5, 8, -1]
+
+        closest_to_zero = min(numbers, key=abs)
+        assert closest_to_zero == -1  # 절댓값 1이 가장 작음
+
+        farthest_from_zero = max(numbers, key=abs)
+        assert farthest_from_zero == -10  # 절댓값 10이 가장 큼
+
+    def test_pow_with_modulo(self):
+        """pow()의 숨겨진 기능 - 모듈러 거듭제곱"""
+        # pow(a, b, c) = (a ** b) % c
+        # 암호학에서 자주 쓰이고, 매우 빠름!
+
+        # 일반적인 방식
+        result1 = (2**100) % 97
+
+        # pow()의 세 번째 인자 사용 (훨씬 빠름)
+        result2 = pow(2, 100, 97)
+
+        assert result1 == result2
+
+    def test_random_basics(self):
+        """random 모듈 기초"""
+        import random
+
+        # seed를 고정하면 항상 같은 "난수"가 나옴 (테스트/재현용)
+        random.seed(42)
+
+        # randint(a, b): a 이상 b 이하의 정수
+        rand_int = random.randint(1, 10)
+        assert 1 <= rand_int <= 10
+
+        random.seed(42)
+
+        # choice(): 시퀀스에서 무작위로 하나 선택
+        colors = ["red", "green", "blue"]
+        picked = random.choice(colors)
+        assert picked in colors
+
+        random.seed(42)
+
+        # shuffle(): 리스트를 무작위로 섞기 (원본 변경)
+        deck = [1, 2, 3, 4, 5]
+        original = deck.copy()
+        random.shuffle(deck)
+        assert set(deck) == set(original)  # 요소는 같음
+
+        random.seed(42)
+
+        # sample(): 무작위로 n개 선택 (원본 유지)
+        items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        selected = random.sample(items, 3)
+        assert len(selected) == 3
+        assert items == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # 원본 유지
+
+    def test_infinity_and_nan(self):
+        """무한대(inf)와 NaN 다루기"""
+        # 무한대 생성
+        pos_inf = float("inf")
+        neg_inf = float("-inf")
+
+        assert pos_inf > 1e308  # 어떤 숫자보다 큼
+        assert neg_inf < -1e308  # 어떤 숫자보다 작음
+
+        # 무한대 연산
+        assert pos_inf + 1 == pos_inf
+        assert pos_inf * 2 == pos_inf
+
+        # NaN (Not a Number) - 정의되지 않은 연산 결과
+        nan = float("nan")
+
+        # NaN은 자기 자신과도 같지 않음!
+        assert nan != nan  # True!
+
+        # NaN 체크는 math.isnan() 사용
+        assert math.isnan(nan)
+        assert math.isinf(pos_inf)
+
+    def test_boolean_as_number(self):
+        """bool은 사실 int의 서브클래스!"""
+        # True는 1, False는 0으로 동작
+        assert True == 1
+        assert False == 0
+
+        # 산술 연산 가능
+        assert True + True == 2
+        assert True * 10 == 10
+        assert False * 100 == 0
+
+        # 실전 활용: True 개수 세기
+        conditions = [True, False, True, True, False]
+        true_count = sum(conditions)
+        assert true_count == 3

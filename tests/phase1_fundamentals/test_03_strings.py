@@ -379,3 +379,151 @@ class TestEdgeCases:
         assert message == "Hello, Guest"
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_f_string_debugging(self):
+        """f-string 디버깅 팁 (Python 3.8+)"""
+        x = 42
+        name = "test"
+
+        # = 를 붙이면 변수명과 값을 함께 출력!
+        debug = f"{x=}"
+        assert debug == "x=42"
+
+        debug = f"{name=}"
+        assert debug == "name='test'"
+
+        # 표현식도 가능
+        debug = f"{x * 2=}"
+        assert debug == "x * 2=84"
+
+    def test_string_alignment(self):
+        """문자열 정렬과 패딩 - 표 형식 출력에 유용"""
+        text = "Hi"
+
+        # ljust(): 왼쪽 정렬, 나머지는 채움 문자로
+        assert text.ljust(5) == "Hi   "  # 기본은 공백
+        assert text.ljust(5, "-") == "Hi---"
+
+        # rjust(): 오른쪽 정렬
+        assert text.rjust(5) == "   Hi"
+        assert text.rjust(5, "0") == "000Hi"
+
+        # center(): 가운데 정렬
+        assert text.center(6) == "  Hi  "
+        assert text.center(6, "*") == "**Hi**"
+
+        # zfill(): 숫자 앞에 0 채우기 (rjust의 특수 버전)
+        assert "42".zfill(5) == "00042"
+        assert "-42".zfill(5) == "-0042"  # 부호는 앞에 유지!
+
+        # f-string으로도 정렬 가능
+        num = 42
+        assert f"{text:<5}" == "Hi   "  # 왼쪽 정렬
+        assert f"{text:>5}" == "   Hi"  # 오른쪽 정렬
+        assert f"{text:^6}" == "  Hi  "  # 가운데 정렬
+        assert f"{num:05d}" == "00042"  # 0으로 패딩
+
+    def test_string_partition(self):
+        """partition - split보다 정교한 분리"""
+        email = "user@example.com"
+
+        # partition(): 구분자 기준으로 3등분
+        # (앞부분, 구분자, 뒷부분) 튜플 반환
+        before, sep, after = email.partition("@")
+        assert before == "user"
+        assert sep == "@"
+        assert after == "example.com"
+
+        # 구분자가 없으면 (원본, '', '') 반환
+        text = "hello"
+        before, sep, after = text.partition("@")
+        assert before == "hello"
+        assert sep == ""
+        assert after == ""
+
+    def test_string_translate(self):
+        """translate - 문자 치환 테이블"""
+        # 여러 문자를 한번에 치환할 때 유용
+        text = "Hello, World!"
+
+        # str.maketrans()로 치환 테이블 생성
+        # 첫번째 인자의 문자를 두번째 인자의 문자로 치환
+        table = str.maketrans("aeiou", "12345")
+        result = text.translate(table)
+        assert result == "H2ll4, W4rld!"
+
+        # 세번째 인자는 삭제할 문자
+        table = str.maketrans("", "", "aeiou")  # 모음 삭제
+        result = text.translate(table)
+        assert result == "Hll, Wrld!"
+
+    def test_splitlines(self):
+        """splitlines - 줄 단위로 분리"""
+        text = "첫째줄\n둘째줄\r\n셋째줄"
+
+        # splitlines()는 모든 종류의 줄바꿈을 처리
+        # (\n, \r\n, \r 등)
+        lines = text.splitlines()
+        assert lines == ["첫째줄", "둘째줄", "셋째줄"]
+
+        # keepends=True로 줄바꿈 문자 유지
+        lines = text.splitlines(keepends=True)
+        assert lines == ["첫째줄\n", "둘째줄\r\n", "셋째줄"]
+
+    def test_removeprefix_removesuffix(self):
+        """removeprefix/removesuffix - 접두사/접미사 제거 (Python 3.9+)"""
+        filename = "test_data.csv"
+
+        # 접두사 제거
+        without_prefix = filename.removeprefix("test_")
+        assert without_prefix == "data.csv"
+
+        # 접미사 제거
+        without_suffix = filename.removesuffix(".csv")
+        assert without_suffix == "test_data"
+
+        # 매칭되지 않으면 원본 그대로 반환
+        unchanged = filename.removeprefix("hello")
+        assert unchanged == "test_data.csv"
+
+    def test_multiple_replace(self):
+        """여러 문자열 한번에 치환하기"""
+        text = "Hello, World! Hello, Python!"
+
+        # 방법 1: replace 체이닝
+        result = text.replace("Hello", "Hi").replace("World", "Earth")
+        assert result == "Hi, Earth! Hi, Python!"
+
+        # 방법 2: 딕셔너리로 관리 (많은 치환이 필요할 때)
+        replacements = {"Hello": "Hi", "World": "Earth", "Python": "Universe"}
+        result = text
+        for old, new in replacements.items():
+            result = result.replace(old, new)
+        assert result == "Hi, Earth! Hi, Universe!"
+
+    def test_string_check_content(self):
+        """문자열 내용 검사 실용 예제 - 실무에서 자주 쓰는 패턴"""
+        # 이메일 간단 검증 (in 연산자 조합)
+        email = "user@example.com"
+        is_valid_email = "@" in email and "." in email
+        assert is_valid_email == True
+
+        # 파일 확장자 확인 (lower + endswith 조합)
+        filename = "Document.PDF"
+        is_pdf = filename.lower().endswith(".pdf")
+        assert is_pdf == True
+
+        # 여러 확장자 한번에 확인
+        is_image = filename.lower().endswith((".png", ".jpg", ".gif"))
+        assert is_image == False
+
+        # 실제 내용이 있는지 확인 (strip + bool 조합)
+        text = "Hello"
+        has_content = bool(text.strip())
+        assert has_content == True
+
+        empty_or_spaces = "   "
+        has_content = bool(empty_or_spaces.strip())
+        assert has_content == False

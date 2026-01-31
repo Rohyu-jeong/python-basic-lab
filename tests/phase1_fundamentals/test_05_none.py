@@ -219,3 +219,118 @@ class TestEdgeCases:
         assert get_username({}) == "Unknown"
 
 
+class TestTips:
+    """꿀팁 - None 활용 노하우"""
+
+    def test_or_operator_with_none(self):
+        """or 연산자로 None 대신 기본값 사용하기"""
+        username = None
+
+        # None이면 기본값 사용
+        display_name = username or "Guest"
+        assert display_name == "Guest"
+
+        # 값이 있으면 그 값 사용
+        username = "Alice"
+        display_name = username or "Guest"
+        assert display_name == "Alice"
+
+        # 주의: 0이나 빈 문자열도 기본값으로 대체됨
+        count = 0
+        result = count or 10  # 0도 falsy라서 10이 됨
+        assert result == 10
+
+    def test_none_coalescing_pattern(self):
+        """None일 때만 기본값을 쓰고 싶다면"""
+        # or는 0, "", [] 등도 대체해버림
+        # None만 대체하고 싶을 때는 이렇게:
+
+        value = 0
+        result = value if value is not None else 10
+        assert result == 0  # 0은 유지됨
+
+        value = None
+        result = value if value is not None else 10
+        assert result == 10  # None만 대체됨
+
+    def test_getattr_with_none_default(self):
+        """getattr로 안전하게 속성 접근하기"""
+
+        class User:
+            def __init__(self):
+                self.name = "Alice"
+                # email 속성은 없음
+
+        user = User()
+
+        # 없는 속성에 접근하면 에러 대신 None 반환
+        email = getattr(user, "email", None)
+        assert email is None
+
+        # 있는 속성은 정상 접근
+        name = getattr(user, "name", None)
+        assert name == "Alice"
+
+    def test_dict_get_returns_none(self):
+        """딕셔너리의 get()은 키가 없으면 None을 반환합니다"""
+        data = {"name": "Alice", "age": 25}
+
+        # 대괄호 접근: 키가 없으면 KeyError
+        # data["email"]  # KeyError 발생!
+
+        # get() 접근: 키가 없으면 None (또는 지정한 기본값)
+        email = data.get("email")
+        assert email is None
+
+        # 기본값 지정 가능
+        email = data.get("email", "not provided")
+        assert email == "not provided"
+
+    def test_filter_none_values(self):
+        """None 값 필터링하는 여러 방법"""
+        data = [1, None, 2, None, 3, None]
+
+        # 방법 1: 리스트 컴프리헨션
+        filtered1 = [x for x in data if x is not None]
+        assert filtered1 == [1, 2, 3]
+
+        # 방법 2: filter 함수 (None을 필터로 쓰면 falsy 제거)
+        filtered2 = list(filter(None, data))
+        assert filtered2 == [1, 2, 3]
+
+        # ⚠️ 방법 2는 0도 제거하니 주의!
+        data_with_zero = [1, None, 0, None, 3]
+        filtered3 = list(filter(None, data_with_zero))
+        assert filtered3 == [1, 3]  # 0도 사라짐!
+
+        # None만 제거하려면 방법 1 사용
+        filtered4 = [x for x in data_with_zero if x is not None]
+        assert filtered4 == [1, 0, 3]  # 0은 유지
+
+    def test_none_safe_chain(self):
+        """중첩된 None 체크 패턴"""
+        # 데이터가 여러 겹으로 중첩된 경우
+        response = {
+            "data": {
+                "user": {
+                    "profile": {
+                        "email": "alice@example.com"
+                    }
+                }
+            }
+        }
+
+        # 안전하게 깊은 값 접근하기
+        def safe_get(data, *keys):
+            for key in keys:
+                if data is None:
+                    return None
+                data = data.get(key) if isinstance(data, dict) else None
+            return data
+
+        email = safe_get(response, "data", "user", "profile", "email")
+        assert email == "alice@example.com"
+
+        # 중간에 없는 키가 있어도 에러 없이 None 반환
+        missing = safe_get(response, "data", "user", "settings", "theme")
+        assert missing is None

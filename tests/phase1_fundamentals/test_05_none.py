@@ -140,3 +140,82 @@ class TestPracticalUsage:
         assert config["timeout"] is None
 
 
+class TestEdgeCases:
+    """주의사항 - None 다룰 때 조심할 것들"""
+
+    def test_is_vs_equality(self):
+        """None 비교는 == 대신 is를 사용하세요"""
+        value = None
+
+        # 둘 다 동작하지만...
+        assert value == None  # 동작은 하지만 권장하지 않음
+        assert value is None  # 이것이 파이썬 관례!
+
+        # 왜 is를 쓸까요?
+        # 1. None은 싱글톤이므로 is가 의미적으로 정확
+        # 2. __eq__를 오버라이드한 객체에서 == 는 예상과 다를 수 있음
+        # 3. is가 더 빠름
+
+    def test_none_is_not_zero(self):
+        """None은 0이 아닙니다"""
+        zero = 0
+        nothing = None
+
+        # 둘 다 falsy하지만 같지 않습니다
+        assert bool(zero) is False
+        assert bool(nothing) is False
+
+        # 하지만 서로 다릅니다!
+        assert zero != nothing
+        assert zero is not nothing
+
+    def test_none_is_not_empty_string(self):
+        """None은 빈 문자열이 아닙니다"""
+        empty = ""
+        nothing = None
+
+        # 둘 다 falsy하지만
+        assert bool(empty) is False
+        assert bool(nothing) is False
+
+        # 서로 다릅니다!
+        assert empty != nothing
+        assert empty is not nothing
+
+    def test_none_is_not_empty_list(self):
+        """None은 빈 리스트가 아닙니다"""
+        empty_list = []
+        nothing = None
+
+        assert bool(empty_list) is False
+        assert bool(nothing) is False
+
+        # 서로 다릅니다!
+        assert empty_list != nothing
+        assert empty_list is not nothing
+
+    def test_none_attribute_error(self):
+        """None에 메서드를 호출하면 에러가 발생합니다"""
+        value = None
+
+        # None에는 일반 객체의 메서드가 없습니다
+        try:
+            value.upper()  # 문자열 메서드를 None에 호출
+        except AttributeError as e:
+            # "'NoneType' object has no attribute 'upper'"
+            assert "NoneType" in str(e)
+
+    def test_check_before_use(self):
+        """None일 수 있는 값은 사용 전에 체크하세요"""
+
+        def get_username(user_dict):
+            # user_dict이 None일 수 있다면?
+            if user_dict is None:
+                return "Anonymous"
+            return user_dict.get("name", "Unknown")
+
+        assert get_username({"name": "Alice"}) == "Alice"
+        assert get_username(None) == "Anonymous"
+        assert get_username({}) == "Unknown"
+
+

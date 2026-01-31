@@ -234,3 +234,74 @@ class TestEdgeCases:
         assert has_score == False  # 진짜 점수 없음
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_any_and_all(self):
+        """any()와 all() - 여러 조건을 한번에 체크"""
+        numbers = [2, 4, 6, 8, 10]
+
+        # all(): 모두 True여야 True
+        # "모든 숫자가 짝수인가?"
+        all_even = all(n % 2 == 0 for n in numbers)
+        assert all_even == True
+
+        # any(): 하나라도 True면 True
+        # "10보다 큰 수가 하나라도 있는가?"
+        has_big_number = any(n > 10 for n in numbers)
+        assert has_big_number == False
+
+        has_big_number = any(n >= 10 for n in numbers)
+        assert has_big_number == True
+
+    def test_bool_conversion(self):
+        """불리언 변환 활용"""
+        # 빈 리스트 체크 - 두 방법 모두 가능
+        items = []
+
+        # 방법 1: 명시적 (초보자에게 추천)
+        is_empty = len(items) == 0
+        assert is_empty == True
+
+        # 방법 2: Pythonic (파이썬스러운 방법)
+        is_empty = not items  # 빈 리스트는 falsy
+        assert is_empty == True
+
+        # 아이템이 있는지 확인
+        items = [1, 2, 3]
+        has_items = bool(items)  # 또는 그냥 if items:
+        assert has_items == True
+
+    def test_ternary_operator(self):
+        """삼항 연산자 - 한 줄로 조건 처리"""
+        age = 20
+
+        # 일반 if문
+        # if age >= 18:
+        #     status = "성인"
+        # else:
+        #     status = "미성년"
+
+        # 삼항 연산자로 한 줄에!
+        # 형식: [참일 때 값] if [조건] else [거짓일 때 값]
+        status = "성인" if age >= 18 else "미성년"
+        assert status == "성인"
+
+        # 실용 예: 절대값 구하기
+        x = -5
+        abs_x = x if x >= 0 else -x
+        assert abs_x == 5
+
+    def test_comparison_chain_gotcha(self):
+        """비교 체이닝의 함정"""
+        # 이건 예상대로 동작
+        assert (1 < 2 < 3) == True  # 1 < 2 and 2 < 3
+
+        # 이건 주의! (괄호 위치가 중요)
+        result = 1 < 2 < 3
+        assert result == True
+
+        # 이렇게 쓰면 다른 의미!
+        # (1 < 2) < 3 은 True < 3, 즉 1 < 3
+        result = (1 < 2) < 3
+        assert result == True  # 우연히 True지만 의미가 다름!

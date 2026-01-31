@@ -165,3 +165,72 @@ class TestPracticalUsage:
         assert name == "철수"
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_equality_vs_identity(self):
+        """== vs is 의 차이"""
+        # == : 값이 같은가?
+        # is : 같은 객체인가? (메모리 주소가 같은가?)
+
+        a = [1, 2, 3]
+        b = [1, 2, 3]
+        c = a
+
+        # a와 b는 값은 같지만 다른 객체
+        assert (a == b) == True  # 값 비교: 같음
+        assert (a is b) == False  # 객체 비교: 다름
+
+        # a와 c는 같은 객체
+        assert (a == c) == True
+        assert (a is c) == True
+
+        # 불리언과 None은 is로 비교하는 게 관례
+        x = True
+        assert (x is True) == True
+
+        y = None
+        assert (y is None) == True
+
+    def test_chained_comparison(self):
+        """비교 연산자 체이닝 - 파이썬만의 편리한 문법"""
+        x = 5
+
+        # 다른 언어: (x > 0) and (x < 10)
+        # 파이썬: 수학처럼 쓸 수 있음!
+        assert (0 < x < 10) == True  # 0 < 5 < 10
+        assert (1 <= x <= 5) == True  # 1 <= 5 <= 5
+
+        # 더 긴 체이닝도 가능
+        assert (0 < 1 < 2 < 3 < 4) == True
+
+    def test_none_comparison(self):
+        """None과 비교할 때 주의점"""
+        value = None
+
+        # None은 반드시 is로 비교!
+        assert (value is None) == True
+        assert (value is not None) == False
+
+        # == 도 동작하지만, 권장하지 않음
+        # 왜냐하면 커스텀 클래스에서 __eq__를 오버라이드하면
+        # 예상치 못한 결과가 나올 수 있기 때문
+
+    def test_common_mistake_zero_vs_none(self):
+        """흔한 실수: 0과 None을 구분 못 함"""
+        # 둘 다 falsy지만 완전히 다른 의미!
+
+        score = 0  # 점수가 0점
+        no_score = None  # 점수가 아직 없음
+
+        # if문에서 주의!
+        # if not score: 는 0점도 "점수 없음"으로 처리해버림
+
+        # 올바른 방법: None인지 명시적으로 확인
+        has_score = score is not None
+        assert has_score == True  # 0점이지만 점수는 있음!
+
+        has_score = no_score is not None
+        assert has_score == False  # 진짜 점수 없음
+
+

@@ -262,3 +262,120 @@ class TestPracticalUsage:
         assert "hello".islower() == True
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_string_comparison_gotcha(self):
+        """문자열 비교의 함정"""
+        # == 는 값을 비교
+        a = "hello"
+        b = "hello"
+        assert a == b  # 값이 같음
+
+        # is 는 객체 동일성을 비교 (메모리 주소)
+        # 짧은 문자열은 Python이 최적화해서 같은 객체를 재사용할 수 있음
+        # 하지만 이것에 의존하면 안 됩니다!
+        c = "hello world " * 100
+        d = "hello world " * 100
+        assert c == d  # 값은 같음
+        # c is d 는 True일 수도 False일 수도 있음 (구현에 따라 다름)
+
+        # 결론: 문자열 비교는 항상 == 사용!
+
+    def test_empty_string_vs_none(self):
+        """빈 문자열과 None의 차이"""
+        empty = ""
+        none_value = None
+
+        # 빈 문자열은 문자열이다!
+        assert type(empty) == str
+        assert len(empty) == 0
+
+        # None은 "값이 없음"을 나타내는 특별한 객체
+        assert none_value is None
+
+        # bool 변환 시 둘 다 False
+        assert bool(empty) == False
+        assert bool(none_value) == False
+
+        # 하지만 다른 것이다!
+        assert empty is not None
+        assert empty != None  # 둘은 다름
+
+        # 공백만 있는 문자열도 주의!
+        # strip() 후 bool로 체크하면 실제 내용 유무 확인 가능
+        spaces_only = "   "
+        assert bool(spaces_only) == True  # 공백도 문자!
+        assert bool(spaces_only.strip()) == False  # 내용은 없음
+
+    def test_string_multiplication(self):
+        """문자열 곱셈 - 반복 생성"""
+        # 문자열 * 숫자 = 반복
+        repeated = "Ha" * 3
+        assert repeated == "HaHaHa"
+
+        # 0이나 음수를 곱하면 빈 문자열
+        assert "Hello" * 0 == ""
+        assert "Hello" * -1 == ""
+
+        # 구분선 만들 때 유용!
+        separator = "-" * 20
+        assert len(separator) == 20
+
+    def test_string_concatenation_performance(self):
+        """문자열 연결 성능 주의사항"""
+        # 반복문에서 + 연결은 비효율적!
+        # (매번 새 문자열 객체를 생성하기 때문)
+
+        # 비효율적인 방법 (이렇게 하지 마세요)
+        # result = ""
+        # for i in range(1000):
+        #     result += str(i)  # 매번 새 객체 생성
+
+        # 효율적인 방법: join 사용
+        numbers = [str(i) for i in range(10)]
+        result = "".join(numbers)
+        assert result == "0123456789"
+
+        # 또는 리스트에 모았다가 한번에 join
+        parts = []
+        for i in range(5):
+            parts.append(str(i))
+        result = "-".join(parts)
+        assert result == "0-1-2-3-4"
+
+    def test_unicode_and_length(self):
+        """유니코드와 문자열 길이"""
+        # Python 3는 유니코드를 기본 지원!
+        korean = "안녕하세요"
+        emoji = "😀🎉🐍"
+
+        # len()은 문자 개수를 반환 (바이트가 아님!)
+        assert len(korean) == 5  # 5글자
+        assert len(emoji) == 3  # 3개의 이모지
+
+        # 한글 인덱싱도 정상 작동
+        assert korean[0] == "안"
+        assert korean[-1] == "요"
+
+    def test_none_string_operations(self):
+        """None과 문자열 연산 - TypeError 주의"""
+        name = None
+
+        # None과 문자열을 직접 연결하면 에러!
+        # message = "Hello, " + name  # TypeError 발생!
+
+        # 안전한 방법 1: 조건 검사
+        if name is not None:
+            message = "Hello, " + name
+        else:
+            message = "Hello, Guest"
+        assert message == "Hello, Guest"
+
+        # 안전한 방법 2: or 연산자 활용
+        name = None
+        safe_name = name or "Guest"  # None이면 "Guest" 사용
+        message = f"Hello, {safe_name}"
+        assert message == "Hello, Guest"
+
+

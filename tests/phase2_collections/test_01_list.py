@@ -166,3 +166,82 @@ class TestBasicConcept:
         assert numbers == []
 
 
+class TestPracticalUsage:
+    """실무 활용 - 실제로 이렇게 씁니다"""
+
+    def test_list_as_stack(self):
+        """스택으로 사용: 마지막에 넣은 것을 먼저 꺼내기 (LIFO)"""
+        stack = []
+        stack.append("접시1")
+        stack.append("접시2")
+        stack.append("접시3")
+
+        assert stack.pop() == "접시3"
+        assert stack.pop() == "접시2"
+        assert stack.pop() == "접시1"
+
+    def test_find_element(self):
+        """요소 찾기: in, index(), count()"""
+        fruits = ["사과", "바나나", "오렌지", "바나나"]
+
+        assert "바나나" in fruits
+        assert "포도" not in fruits
+        assert fruits.index("바나나") == 1  # 첫 번째 위치
+        assert fruits.count("바나나") == 2
+
+    def test_sorting(self):
+        """정렬: sort() vs sorted()"""
+        numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+
+        # sorted(): 새 리스트 반환 (원본 유지)
+        sorted_nums = sorted(numbers)
+        assert sorted_nums == [1, 1, 2, 3, 4, 5, 6, 9]
+        assert numbers == [3, 1, 4, 1, 5, 9, 2, 6]  # 원본 그대로
+
+        # sort(): 원본을 직접 정렬
+        numbers.sort()
+        assert numbers == [1, 1, 2, 3, 4, 5, 6, 9]
+
+        # 내림차순
+        numbers.sort(reverse=True)
+        assert numbers == [9, 6, 5, 4, 3, 2, 1, 1]
+
+    def test_reverse_list(self):
+        """리스트 뒤집기"""
+        original = [1, 2, 3, 4, 5]
+
+        # [::-1]: 새 리스트 반환 (가장 많이 사용)
+        reversed_list = original[::-1]
+        assert reversed_list == [5, 4, 3, 2, 1]
+        assert original == [1, 2, 3, 4, 5]  # 원본 유지
+
+        # reverse(): 원본을 직접 뒤집음
+        original.reverse()
+        assert original == [5, 4, 3, 2, 1]
+
+    def test_concatenation_and_multiplication(self):
+        """리스트 합치기와 반복"""
+        list1 = [1, 2, 3]
+        list2 = [4, 5, 6]
+
+        combined = list1 + list2
+        assert combined == [1, 2, 3, 4, 5, 6]
+
+        pattern = [1, 2] * 3
+        assert pattern == [1, 2, 1, 2, 1, 2]
+
+        zeros = [0] * 5
+        assert zeros == [0, 0, 0, 0, 0]
+
+    def test_min_max_sum(self):
+        """리스트 통계: min(), max(), sum()"""
+        numbers = [3, 1, 4, 1, 5, 9, 2, 6]
+
+        assert min(numbers) == 1
+        assert max(numbers) == 9
+        assert sum(numbers) == 31
+
+        average = sum(numbers) / len(numbers)
+        assert average == 31 / 8
+
+

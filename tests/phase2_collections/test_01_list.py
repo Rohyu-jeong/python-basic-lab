@@ -327,3 +327,75 @@ class TestEdgeCases:
         assert first is None
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_join_and_split(self):
+        """리스트 <-> 문자열 변환"""
+        words = ["Hello", "World", "Python"]
+        sentence = " ".join(words)
+        assert sentence == "Hello World Python"
+
+        csv = "apple,banana,orange"
+        fruits = csv.split(",")
+        assert fruits == ["apple", "banana", "orange"]
+
+    def test_enumerate_for_index(self):
+        """인덱스와 값을 함께 얻기: enumerate()"""
+        fruits = ["사과", "바나나", "오렌지"]
+
+        result = []
+        for index, fruit in enumerate(fruits):
+            result.append(f"{index}: {fruit}")
+
+        assert result == ["0: 사과", "1: 바나나", "2: 오렌지"]
+
+    def test_zip_multiple_lists(self):
+        """여러 리스트 동시 순회: zip()"""
+        names = ["Alice", "Bob", "Charlie"]
+        scores = [85, 92, 78]
+
+        result = []
+        for name, score in zip(names, scores):
+            result.append(f"{name}: {score}점")
+
+        assert result == ["Alice: 85점", "Bob: 92점", "Charlie: 78점"]
+
+    def test_all_and_any(self):
+        """모두 참? 하나라도 참? all(), any()"""
+        assert all([True, True, True]) is True
+        assert all([True, False, True]) is False
+
+        assert any([False, False, True]) is True
+        assert any([False, False, False]) is False
+
+    def test_list_comprehension_preview(self):
+        """리스트 컴프리헨션 맛보기 (Phase 8에서 자세히!)"""
+        # 기존 방식
+        squares_old = []
+        for x in range(5):
+            squares_old.append(x ** 2)
+
+        # 리스트 컴프리헨션
+        squares_new = [x ** 2 for x in range(5)]
+
+        assert squares_old == squares_new == [0, 1, 4, 9, 16]
+
+    def test_copy_methods_summary(self):
+        """리스트 복사 방법 3가지"""
+        original = [1, 2, 3]
+
+        copy1 = original[:]       # 슬라이싱 (가장 많이 사용)
+        copy2 = list(original)    # list() 함수
+        copy3 = original.copy()   # copy() 메서드
+
+        assert copy1 == copy2 == copy3 == original
+        assert copy1 is not original
+
+    def test_check_list_type(self):
+        """리스트인지 확인하기"""
+        my_list = [1, 2, 3]
+        my_string = "hello"
+
+        assert isinstance(my_list, list)
+        assert not isinstance(my_string, list)

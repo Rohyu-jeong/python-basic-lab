@@ -1,0 +1,168 @@
+"""
+Phase 2 - 리스트 (List)
+=======================
+학습 목표: 파이썬에서 가장 많이 쓰이는 자료구조인 리스트를 완벽히 이해하기
+
+핵심 개념:
+- 리스트는 여러 값을 순서대로 담는 "상자"입니다
+- 대괄호 []로 만들고, 쉼표로 값을 구분합니다
+- 순서가 있어서 몇 번째인지(인덱스)로 값을 꺼낼 수 있습니다
+- 값을 추가, 삭제, 변경할 수 있습니다 (가변적 = mutable)
+"""
+
+import pytest
+
+
+class TestBasicConcept:
+    """기본 개념 - 리스트 생성, 인덱싱, 슬라이싱, 수정"""
+
+    # === 리스트 생성 ===
+
+    def test_create_empty_list(self):
+        """빈 리스트 만들기 - 아무것도 없는 서랍장 준비"""
+        # 방법 1: 대괄호 사용 (가장 일반적)
+        empty1 = []
+
+        # 방법 2: list() 함수 사용
+        empty2 = list()
+
+        assert empty1 == []
+        assert empty2 == []
+        assert len(empty1) == 0  # len()은 리스트의 길이(개수)를 알려줍니다
+
+    def test_create_list_with_values(self):
+        """값이 들어있는 리스트 만들기"""
+        # 숫자 리스트
+        numbers = [1, 2, 3, 4, 5]
+
+        # 문자열 리스트
+        fruits = ["사과", "바나나", "오렌지"]
+
+        # 섞어서도 가능! (파이썬의 유연함)
+        mixed = [1, "hello", 3.14, True]
+
+        assert len(numbers) == 5
+        assert len(fruits) == 3
+        assert len(mixed) == 4
+
+    def test_list_preserves_order_and_allows_duplicates(self):
+        """리스트는 순서를 기억하고 중복을 허용합니다"""
+        items = ["첫번째", "두번째", "세번째"]
+        assert items[0] == "첫번째"
+        assert items[1] == "두번째"
+
+        # 같은 값이 여러 번 들어갈 수 있어요
+        numbers = [1, 1, 2, 2, 2, 3]
+        assert len(numbers) == 6
+        assert numbers.count(2) == 3
+
+    # === 인덱싱 ===
+
+    def test_positive_index(self):
+        """양수 인덱스: 앞에서부터 세기 (0부터 시작!)"""
+        colors = ["빨강", "주황", "노랑", "초록", "파랑"]
+        #          [0]     [1]     [2]     [3]     [4]
+
+        assert colors[0] == "빨강"  # 첫 번째
+        assert colors[1] == "주황"  # 두 번째
+        assert colors[4] == "파랑"  # 다섯 번째 (마지막)
+
+    def test_negative_index(self):
+        """음수 인덱스: 뒤에서부터 세기"""
+        colors = ["빨강", "주황", "노랑", "초록", "파랑"]
+        #          [-5]    [-4]    [-3]    [-2]    [-1]
+
+        assert colors[-1] == "파랑"  # 마지막
+        assert colors[-2] == "초록"  # 마지막에서 두 번째
+
+    def test_index_out_of_range(self):
+        """범위를 벗어나면 IndexError 발생"""
+        numbers = [10, 20, 30]
+
+        with pytest.raises(IndexError):
+            _ = numbers[3]
+
+        with pytest.raises(IndexError):
+            _ = numbers[-4]
+
+    # === 슬라이싱 ===
+
+    def test_basic_slicing(self):
+        """기본 슬라이싱: list[시작:끝] - 끝은 미포함!"""
+        numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        assert numbers[2:5] == [2, 3, 4]  # 2번부터 4번까지
+        assert numbers[:3] == [0, 1, 2]   # 처음부터 2번까지
+        assert numbers[7:] == [7, 8, 9]   # 7번부터 끝까지
+        assert numbers[:] == numbers      # 전체 복사
+
+    def test_slicing_with_step(self):
+        """스텝 사용: list[시작:끝:스텝]"""
+        numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        assert numbers[::2] == [0, 2, 4, 6, 8]   # 2칸씩 건너뛰기
+        assert numbers[::-1] == [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]  # 역순
+
+    def test_slicing_never_errors(self):
+        """슬라이싱은 범위를 벗어나도 에러 없음 (안전함!)"""
+        numbers = [1, 2, 3]
+
+        assert numbers[1:100] == [2, 3]  # 가능한 만큼만
+        assert numbers[100:200] == []     # 빈 리스트 반환
+
+    # === 리스트 수정 ===
+
+    def test_change_value(self):
+        """값 변경하기"""
+        fruits = ["사과", "바나나", "오렌지"]
+        fruits[1] = "포도"
+        assert fruits == ["사과", "포도", "오렌지"]
+
+    def test_append_and_insert(self):
+        """append(): 맨 뒤에 추가, insert(): 원하는 위치에 삽입"""
+        numbers = [1, 2, 3]
+        numbers.append(4)
+        assert numbers == [1, 2, 3, 4]
+
+        fruits = ["사과", "오렌지"]
+        fruits.insert(1, "바나나")
+        assert fruits == ["사과", "바나나", "오렌지"]
+
+    def test_extend_vs_append(self):
+        """extend vs append - 자주 헷갈리는 부분!"""
+        list1 = [1, 2, 3]
+        list1.append([4, 5])  # 리스트 자체를 하나의 요소로 추가
+        assert list1 == [1, 2, 3, [4, 5]]
+
+        list2 = [1, 2, 3]
+        list2.extend([4, 5])  # 요소들을 풀어서 추가
+        assert list2 == [1, 2, 3, 4, 5]
+
+    def test_remove_and_pop(self):
+        """remove(): 값으로 삭제, pop(): 인덱스로 삭제하고 반환"""
+        numbers = [1, 2, 3, 2, 4]
+        numbers.remove(2)  # 첫 번째 2만 삭제
+        assert numbers == [1, 3, 2, 4]
+
+        fruits = ["사과", "바나나", "오렌지"]
+        removed = fruits.pop(1)
+        assert removed == "바나나"
+        assert fruits == ["사과", "오렌지"]
+
+        stack = [1, 2, 3]
+        last = stack.pop()  # 인덱스 없으면 마지막 삭제
+        assert last == 3
+
+    def test_del_and_clear(self):
+        """del: 인덱스/슬라이스로 삭제, clear(): 전체 삭제"""
+        numbers = [0, 1, 2, 3, 4, 5]
+        del numbers[0]
+        assert numbers == [1, 2, 3, 4, 5]
+
+        del numbers[1:3]
+        assert numbers == [1, 4, 5]
+
+        numbers.clear()
+        assert numbers == []
+
+

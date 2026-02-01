@@ -245,3 +245,85 @@ class TestPracticalUsage:
         assert average == 31 / 8
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_mutable_default_argument_trap(self):
+        """함정 1: 함수의 기본값으로 빈 리스트 쓰기"""
+
+        # 잘못된 방법: 기본값이 공유됨!
+        def bad_append(item, lst=[]):
+            lst.append(item)
+            return lst
+
+        result1 = bad_append(1)
+        result2 = bad_append(2)
+        assert result2 == [1, 2]  # 예상: [2], 실제: [1, 2] - 버그!
+
+        # 올바른 방법: None을 기본값으로
+        def good_append(item, lst=None):
+            if lst is None:
+                lst = []
+            lst.append(item)
+            return lst
+
+        result3 = good_append(1)
+        result4 = good_append(2)
+        assert result3 == [1]
+        assert result4 == [2]
+
+    def test_shallow_copy_trap(self):
+        """함정 2: 얕은 복사 - 내부 객체는 공유됨"""
+        import copy
+
+        original = [[1, 2], [3, 4]]
+        shallow = original[:]
+
+        # 내부 리스트는 같은 객체
+        shallow[0][0] = 999
+        assert original[0][0] == 999  # 원본도 바뀜!
+
+        # 해결책: 깊은 복사
+        original2 = [[1, 2], [3, 4]]
+        deep = copy.deepcopy(original2)
+        deep[0][0] = 999
+        assert original2[0][0] == 1  # 원본은 그대로!
+
+    def test_remove_while_iterating_trap(self):
+        """함정 3: 반복하면서 삭제하기"""
+        numbers = [1, 2, 3, 4, 5]
+
+        # 올바른 방법: 복사본으로 반복
+        for num in numbers[:]:
+            if num % 2 == 0:
+                numbers.remove(num)
+
+        assert numbers == [1, 3, 5]
+
+    def test_list_multiplication_trap(self):
+        """함정 4: 리스트 곱셈으로 2차원 배열 만들기"""
+        # 잘못된 방법: 같은 리스트가 복제됨
+        bad_matrix = [[0] * 3] * 3
+        bad_matrix[0][0] = 1
+        assert bad_matrix == [[1, 0, 0], [1, 0, 0], [1, 0, 0]]  # 모든 행이 바뀜!
+
+        # 올바른 방법: 리스트 컴프리헨션
+        good_matrix = [[0] * 3 for _ in range(3)]
+        good_matrix[0][0] = 1
+        assert good_matrix == [[1, 0, 0], [0, 0, 0], [0, 0, 0]]
+
+    def test_empty_list_access(self):
+        """함정 5: 빈 리스트에서 접근하기"""
+        empty = []
+
+        with pytest.raises(IndexError):
+            empty.pop()
+
+        with pytest.raises(IndexError):
+            _ = empty[0]
+
+        # 안전하게 확인하고 접근하기
+        first = empty[0] if empty else None
+        assert first is None
+
+

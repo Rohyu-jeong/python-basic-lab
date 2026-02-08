@@ -301,3 +301,90 @@ class TestPracticalUsage:
         assert is_pure_color((128, 128, 128)) is False  # 회색은 순색 아님
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_accidental_tuple_creation(self):
+        """실수: 의도치 않게 튜플 만들기"""
+        # 쉼표를 실수로 넣으면 튜플이 됩니다
+
+        # 이런 실수를 할 수 있어요
+        number = 100,  # 쉼표가 들어감!
+        assert type(number) == tuple
+
+        # 특히 여러 줄에 걸쳐 작성할 때 주의
+        value = (
+            "hello"  # 쉼표 없으면 문자열
+        )
+        assert type(value) == str
+
+        value_tuple = (
+            "hello",  # 쉼표 있으면 튜플
+        )
+        assert type(value_tuple) == tuple
+
+    def test_unpacking_count_mismatch(self):
+        """실수: 언패킹할 때 개수가 안 맞음"""
+        point = (10, 20, 30)
+
+        # 변수 개수가 맞아야 합니다
+        import pytest
+
+        # 너무 적은 변수
+        with pytest.raises(ValueError):
+            x, y = point  # ValueError: too many values to unpack
+
+        # 너무 많은 변수
+        with pytest.raises(ValueError):
+            a, b, c, d = point  # ValueError: not enough values to unpack
+
+        # 올바른 방법
+        x, y, z = point
+        assert (x, y, z) == (10, 20, 30)
+
+    def test_tuple_inside_tuple(self):
+        """중첩 튜플 다루기"""
+        # 튜플 안에 튜플이 있을 수 있습니다
+        nested = ((1, 2), (3, 4), (5, 6))
+
+        # 인덱스를 연속으로 사용
+        assert nested[0] == (1, 2)
+        assert nested[0][0] == 1
+        assert nested[1][1] == 4
+
+        # 중첩 언패킹
+        (a, b), (c, d), (e, f) = nested
+        assert a == 1
+        assert d == 4
+
+    def test_comparing_tuples(self):
+        """튜플 비교 - 앞에서부터 순서대로 비교"""
+        # 튜플은 앞에서부터 순서대로 비교합니다
+        assert (1, 2, 3) < (1, 2, 4)  # 세 번째 원소에서 결정
+        assert (1, 2) < (1, 2, 0)  # 길이가 짧은 게 더 작음
+        assert (2, 0) > (1, 9, 9, 9)  # 첫 번째 원소에서 이미 결정
+
+        # 이 성질을 이용한 정렬
+        students = [("Kim", 85), ("Lee", 90), ("Park", 85)]
+        # 점수로 정렬, 점수 같으면 이름으로 정렬
+        sorted_students = sorted(students, key=lambda x: (-x[1], x[0]))
+        # -x[1]로 점수 내림차순, x[0]으로 이름 오름차순
+        assert sorted_students[0] == ("Lee", 90)  # 최고점
+        assert sorted_students[1] == ("Kim", 85)  # 같은 점수면 이름순
+
+    def test_tuple_not_always_hashable(self):
+        """함정: 튜플이라고 항상 딕셔너리 키로 쓸 수 있는 건 아닙니다"""
+        # 튜플 안에 리스트가 있으면 해시 불가능!
+        import pytest
+
+        # 순수 튜플은 딕셔너리 키로 사용 가능
+        pure_tuple = (1, 2, 3)
+        valid_dict = {pure_tuple: "works"}
+        assert valid_dict[(1, 2, 3)] == "works"
+
+        # 리스트를 포함한 튜플은 안 됨!
+        mixed_tuple = (1, [2, 3])
+        with pytest.raises(TypeError):
+            bad_dict = {mixed_tuple: "fails"}  # unhashable type: 'list'
+
+

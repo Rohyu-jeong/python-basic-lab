@@ -388,3 +388,123 @@ class TestEdgeCases:
             bad_dict = {mixed_tuple: "fails"}  # unhashable type: 'list'
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_named_tuple_basic(self):
+        """네임드 튜플 - 인덱스 대신 이름으로 접근"""
+        from collections import namedtuple
+
+        # 튜플인데 이름으로 접근할 수 있어서 더 읽기 좋습니다
+        Point = namedtuple("Point", ["x", "y"])
+
+        p = Point(10, 20)
+
+        # 이름으로 접근 (더 읽기 좋음!)
+        assert p.x == 10
+        assert p.y == 20
+
+        # 인덱스로도 접근 가능
+        assert p[0] == 10
+        assert p[1] == 20
+
+        # 여전히 튜플입니다
+        assert isinstance(p, tuple)
+
+    def test_named_tuple_practical(self):
+        """네임드 튜플 실용 예제"""
+        from collections import namedtuple
+
+        # 학생 정보를 담는 구조
+        Student = namedtuple("Student", ["name", "grade", "score"])
+
+        students = [
+            Student("김철수", 3, 85),
+            Student("이영희", 2, 92),
+            Student("박민수", 3, 78),
+        ]
+
+        # 이름으로 접근하니 코드가 읽기 좋음
+        top_student = max(students, key=lambda s: s.score)
+        assert top_student.name == "이영희"
+        assert top_student.score == 92
+
+        # 언패킹도 됨
+        name, grade, score = top_student
+        assert name == "이영희"
+
+    def test_tuple_vs_list_performance(self):
+        """튜플 vs 리스트 성능 - 튜플이 더 가볍습니다"""
+        import sys
+
+        # 같은 데이터인데 튜플이 메모리를 덜 씁니다
+        tuple_data = (1, 2, 3, 4, 5)
+        list_data = [1, 2, 3, 4, 5]
+
+        tuple_size = sys.getsizeof(tuple_data)
+        list_size = sys.getsizeof(list_data)
+
+        # 리스트가 더 큽니다 (추가/삭제를 위한 여유 공간 때문)
+        assert tuple_size < list_size
+
+    def test_when_to_use_tuple(self):
+        """언제 튜플을 쓸까요?"""
+        # 1. 변경되면 안 되는 상수 데이터
+        DAYS_OF_WEEK = ("월", "화", "수", "목", "금", "토", "일")
+        HTTP_STATUS = (200, 201, 204, 400, 401, 403, 404, 500)
+
+        # 2. 의미 있는 순서가 있는 짧은 데이터 묶음
+        rgb_red = (255, 0, 0)
+        coordinate = (37.5665, 126.9780)  # 위도, 경도
+
+        # 3. 데이터베이스 쿼리 결과처럼 읽기 전용 레코드
+        db_row = ("user_001", "홍길동", "hong@email.com")
+
+        assert DAYS_OF_WEEK[0] == "월"
+        assert 404 in HTTP_STATUS
+        assert rgb_red[0] == 255
+
+    def test_tuple_unpacking_in_comprehension(self):
+        """컴프리헨션에서 언패킹 활용"""
+        pairs = [(1, "a"), (2, "b"), (3, "c")]
+
+        # 각 튜플에서 숫자만 추출
+        numbers = [num for num, letter in pairs]
+        assert numbers == [1, 2, 3]
+
+        # 문자만 추출해서 대문자로
+        letters = [letter.upper() for num, letter in pairs]
+        assert letters == ["A", "B", "C"]
+
+        # 딕셔너리로 변환
+        mapping = {letter: num for num, letter in pairs}
+        assert mapping == {"a": 1, "b": 2, "c": 3}
+
+    def test_underscore_for_unused_values(self):
+        """언더스코어로 불필요한 값 무시하기"""
+        data = ("Kim", 25, "Seoul", "Engineer")
+
+        # 이름과 직업만 필요할 때
+        name, _, _, job = data  # 언더스코어는 "이 값은 안 씀"을 의미
+        assert name == "Kim"
+        assert job == "Engineer"
+
+        # 첫 번째만 필요할 때
+        first, *_ = data  # 나머지 전부 무시
+        assert first == "Kim"
+
+    def test_tuple_to_list_and_back(self):
+        """튜플 수정이 필요할 때 - 리스트로 변환 후 다시 튜플로"""
+        original = (1, 2, 3, 4, 5)
+
+        # 튜플은 수정 불가하므로 리스트로 변환
+        temp_list = list(original)
+        temp_list[2] = 99  # 수정
+        temp_list.append(6)  # 추가
+
+        # 다시 튜플로
+        modified = tuple(temp_list)
+        assert modified == (1, 2, 99, 4, 5, 6)
+
+        # 원본은 그대로
+        assert original == (1, 2, 3, 4, 5)

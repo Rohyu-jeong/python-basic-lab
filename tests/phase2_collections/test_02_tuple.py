@@ -161,3 +161,143 @@ class TestBasicConcept:
         assert len(fruits) == 3
 
 
+class TestPracticalUsage:
+    """실무 활용 - 실제로 이렇게 씁니다"""
+
+    def test_tuple_unpacking_basic(self):
+        """튜플 언패킹 기본 - 여러 변수에 한 번에 할당"""
+        # 튜플의 각 값을 개별 변수로 꺼내는 것을 "언패킹"이라고 합니다
+        coordinates = (10, 20)
+        x, y = coordinates  # 한 줄로 두 변수에 할당!
+
+        assert x == 10
+        assert y == 20
+
+        # 직접 언패킹도 가능
+        a, b, c = 1, 2, 3
+        assert a == 1
+        assert b == 2
+        assert c == 3
+
+    def test_swap_values_with_tuple(self):
+        """변수 값 교환 - 파이썬의 우아한 방법"""
+        a = 10
+        b = 20
+
+        # 다른 언어에서는 임시 변수가 필요하지만
+        # 파이썬에서는 튜플 언패킹으로 한 줄에 끝!
+        a, b = b, a
+
+        assert a == 20
+        assert b == 10
+
+    def test_function_return_multiple_values(self):
+        """함수에서 여러 값 반환하기 - 튜플의 가장 흔한 용도"""
+
+        def get_min_max(numbers):
+            """최솟값과 최댓값을 동시에 반환"""
+            return min(numbers), max(numbers)  # 튜플로 반환됨
+
+        data = [5, 2, 9, 1, 7]
+        minimum, maximum = get_min_max(data)  # 언패킹으로 받기
+
+        assert minimum == 1
+        assert maximum == 9
+
+        # 튜플 그대로 받을 수도 있음
+        result = get_min_max(data)
+        assert result == (1, 9)
+        assert type(result) == tuple
+
+    def test_unpacking_with_star(self):
+        """* 를 사용한 확장 언패킹 - 나머지를 리스트로 받기"""
+        numbers = (1, 2, 3, 4, 5)
+
+        # 첫 번째와 나머지
+        first, *rest = numbers
+        assert first == 1
+        assert rest == [2, 3, 4, 5]  # 나머지는 리스트가 됨!
+
+        # 처음, 중간, 마지막
+        head, *middle, tail = numbers
+        assert head == 1
+        assert middle == [2, 3, 4]
+        assert tail == 5
+
+        # 마지막만 따로
+        *others, last = numbers
+        assert others == [1, 2, 3, 4]
+        assert last == 5
+
+    def test_unpacking_in_for_loop(self):
+        """for 문에서 언패킹 활용"""
+        # 좌표 리스트를 순회할 때
+        points = [(0, 0), (1, 2), (3, 4)]
+
+        distances_from_origin = []
+        for x, y in points:  # 각 튜플을 x, y로 언패킹
+            distance = (x**2 + y**2) ** 0.5  # 원점으로부터 거리
+            distances_from_origin.append(distance)
+
+        assert distances_from_origin[0] == 0.0
+        assert distances_from_origin[1] == (1 + 4) ** 0.5
+
+    def test_tuple_with_enumerate(self):
+        """enumerate와 함께 사용 - 인덱스와 값을 동시에"""
+        fruits = ("apple", "banana", "cherry")
+
+        result = []
+        for index, fruit in enumerate(fruits):  # (인덱스, 값) 튜플을 언패킹
+            result.append(f"{index}: {fruit}")
+
+        assert result == ["0: apple", "1: banana", "2: cherry"]
+
+    def test_tuple_with_zip(self):
+        """zip과 함께 사용 - 여러 시퀀스를 동시에 순회"""
+        names = ("Alice", "Bob", "Charlie")
+        ages = (25, 30, 35)
+        cities = ("Seoul", "Busan", "Daegu")
+
+        people = []
+        for name, age, city in zip(names, ages, cities):
+            people.append(f"{name}({age}) from {city}")
+
+        assert people[0] == "Alice(25) from Seoul"
+        assert people[1] == "Bob(30) from Busan"
+
+    def test_tuple_as_dict_key(self):
+        """딕셔너리 키로 사용 - 리스트는 안 되지만 튜플은 됩니다"""
+        # 튜플은 불변이므로 딕셔너리 키로 사용 가능!
+        # 좌표를 키로 사용하는 예시
+        grid = {}
+        grid[(0, 0)] = "origin"
+        grid[(1, 0)] = "right"
+        grid[(0, 1)] = "up"
+
+        assert grid[(0, 0)] == "origin"
+        assert grid[(1, 0)] == "right"
+
+        # 리스트는 키로 사용 불가 (unhashable)
+        import pytest
+
+        with pytest.raises(TypeError):
+            bad_dict = {[0, 0]: "this will fail"}
+
+    def test_tuple_for_grouping_data(self):
+        """데이터 그룹화 - 관련 있는 값들을 묶어두기"""
+        # RGB 색상을 튜플로 표현
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+        blue = (0, 0, 255)
+
+        # 함수에서 활용
+        def is_pure_color(rgb):
+            """순색인지 확인 (RGB 중 하나만 255)"""
+            r, g, b = rgb
+            return (r == 255 or g == 255 or b == 255) and rgb.count(0) == 2
+
+        assert is_pure_color(red) is True
+        assert is_pure_color(green) is True
+        assert is_pure_color((128, 128, 128)) is False  # 회색은 순색 아님
+
+

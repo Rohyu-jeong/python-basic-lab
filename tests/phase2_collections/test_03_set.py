@@ -241,3 +241,123 @@ class TestPracticalUsage:
         assert exclusive == also_exclusive
 
 
+class TestEdgeCases:
+    """주의사항 - 자주 하는 실수와 함정"""
+
+    def test_set_equality_ignores_order(self):
+        """set 비교는 순서와 무관합니다"""
+        set1 = {1, 2, 3}
+        set2 = {3, 1, 2}
+        set3 = {3, 2, 1}
+
+        # 모두 같은 set입니다
+        assert set1 == set2 == set3
+
+    def test_set_in_list_vs_set_equality(self):
+        """set과 list는 다른 타입입니다"""
+        my_set = {1, 2, 3}
+        my_list = [1, 2, 3]
+
+        # 요소가 같아도 타입이 다르면 다릅니다
+        assert my_set != my_list
+
+    def test_modifying_set_during_iteration(self):
+        """반복 중 set 수정하면 에러납니다"""
+        numbers = {1, 2, 3, 4, 5}
+
+        # 이렇게 하면 에러!
+        # for n in numbers:
+        #     if n % 2 == 0:
+        #         numbers.remove(n)  # RuntimeError!
+
+        # 대신 복사본을 순회하거나
+        for n in numbers.copy():
+            if n % 2 == 0:
+                numbers.remove(n)
+
+        assert numbers == {1, 3, 5}
+
+    def test_set_comprehension_alternative(self):
+        """set comprehension으로 조건부 생성"""
+        # 위의 문제를 더 파이썬스럽게 해결
+        original = {1, 2, 3, 4, 5}
+        odd_only = {n for n in original if n % 2 != 0}
+
+        assert odd_only == {1, 3, 5}
+
+    def test_subset_and_superset(self):
+        """부분집합과 상위집합 확인"""
+        small = {1, 2}
+        medium = {1, 2, 3}
+        large = {1, 2, 3, 4, 5}
+
+        # 부분집합: small의 모든 요소가 medium에 있는가?
+        assert small.issubset(medium)
+        assert small <= medium  # 연산자로도 가능
+
+        # 진부분집합: 부분집합이면서 같지 않은가?
+        assert small < medium  # True
+        assert medium < medium  # False (자기 자신)
+
+        # 상위집합: large가 medium의 모든 요소를 포함하는가?
+        assert large.issuperset(medium)
+        assert large >= medium
+
+    def test_disjoint_no_common_elements(self):
+        """서로소 - 공통 요소가 없는 집합"""
+        evens = {2, 4, 6, 8}
+        odds = {1, 3, 5, 7}
+        primes = {2, 3, 5, 7}
+
+        # evens와 odds는 공통 요소가 없습니다
+        assert evens.isdisjoint(odds)
+
+        # evens와 primes는 2가 공통입니다
+        assert not evens.isdisjoint(primes)
+
+    def test_copy_creates_shallow_copy(self):
+        """copy()는 얕은 복사를 합니다"""
+        original = {1, 2, 3}
+        copied = original.copy()
+
+        # 복사본 수정해도 원본은 그대로
+        copied.add(4)
+
+        assert original == {1, 2, 3}
+        assert copied == {1, 2, 3, 4}
+
+    def test_set_operations_return_new_set(self):
+        """집합 연산은 새로운 set을 반환합니다"""
+        a = {1, 2, 3}
+        b = {3, 4, 5}
+
+        union = a | b
+
+        # 원본은 변하지 않습니다
+        assert a == {1, 2, 3}
+        assert b == {3, 4, 5}
+        assert union == {1, 2, 3, 4, 5}
+
+    def test_inplace_operations_modify_original(self):
+        """update 계열 메서드는 원본을 수정합니다"""
+        a = {1, 2, 3}
+        b = {3, 4, 5}
+
+        # |= 는 update()와 같습니다
+        a |= b  # a = a | b 와 달리 a를 직접 수정
+
+        assert a == {1, 2, 3, 4, 5}
+
+        c = {10, 20}
+        c.update([30, 40])
+        assert c == {10, 20, 30, 40}
+
+        d = {1, 2, 3, 4, 5}
+        d &= {2, 3, 4}  # intersection_update
+        assert d == {2, 3, 4}
+
+        e = {1, 2, 3, 4, 5}
+        e -= {1, 2}  # difference_update
+        assert e == {3, 4, 5}
+
+

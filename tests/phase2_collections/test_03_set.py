@@ -361,3 +361,126 @@ class TestEdgeCases:
         assert e == {3, 4, 5}
 
 
+class TestTips:
+    """꿀팁 - 알아두면 유용한 것들"""
+
+    def test_count_unique_items(self):
+        """고유 항목 개수 세기"""
+        purchases = ["apple", "banana", "apple", "cherry", "banana", "apple"]
+
+        unique_count = len(set(purchases))
+        assert unique_count == 3
+
+    def test_check_all_unique(self):
+        """모든 요소가 고유한지 확인하기"""
+        # 리스트의 길이와 set으로 변환한 길이가 같으면 중복 없음
+        no_duplicates = [1, 2, 3, 4, 5]
+        has_duplicates = [1, 2, 2, 3, 4]
+
+        def is_all_unique(items):
+            return len(items) == len(set(items))
+
+        assert is_all_unique(no_duplicates) is True
+        assert is_all_unique(has_duplicates) is False
+
+    def test_find_duplicates(self):
+        """중복된 요소 찾기"""
+        items = ["a", "b", "a", "c", "b", "d", "a"]
+
+        seen = set()
+        duplicates = set()
+
+        for item in items:
+            if item in seen:
+                duplicates.add(item)
+            seen.add(item)
+
+        assert duplicates == {"a", "b"}
+
+    def test_multiple_set_operations(self):
+        """여러 set을 한번에 연산하기"""
+        a = {1, 2, 3}
+        b = {2, 3, 4}
+        c = {3, 4, 5}
+
+        # 세 집합 모두에 있는 요소
+        common_all = a & b & c
+        assert common_all == {3}
+
+        # 세 집합 중 하나라도 있으면
+        any_of_them = a | b | c
+        assert any_of_them == {1, 2, 3, 4, 5}
+
+        # intersection/union에 여러 인자 전달 가능
+        also_common = a.intersection(b, c)
+        assert also_common == {3}
+
+    def test_set_for_fast_lookup_table(self):
+        """빠른 검색을 위한 set 활용"""
+        # 금지된 단어 목록을 set으로 관리
+        banned_words = {"spam", "virus", "malware", "phishing"}
+
+        def is_safe(text):
+            words = text.lower().split()
+            # set의 in 연산은 O(1)로 매우 빠릅니다
+            return not any(word in banned_words for word in words)
+
+        assert is_safe("Hello world") is True
+        assert is_safe("Click here no spam") is False
+
+    def test_set_comprehension(self):
+        """set comprehension - 조건부로 set 만들기"""
+        # 1부터 20까지 중 3의 배수만
+        multiples_of_3 = {n for n in range(1, 21) if n % 3 == 0}
+        assert multiples_of_3 == {3, 6, 9, 12, 15, 18}
+
+        # 문자열의 모음만 추출
+        text = "Hello World"
+        vowels = {char.lower() for char in text if char.lower() in "aeiou"}
+        assert vowels == {"e", "o"}
+
+    def test_set_with_tuple_for_coordinates(self):
+        """좌표나 쌍을 set으로 관리하기"""
+        # 방문한 좌표들을 기록 (게임, 그래프 탐색 등에서 유용)
+        visited = set()
+
+        visited.add((0, 0))
+        visited.add((1, 0))
+        visited.add((1, 1))
+        visited.add((0, 0))  # 중복 - 무시됨
+
+        assert len(visited) == 3
+        assert (1, 1) in visited
+        assert (2, 2) not in visited
+
+    def test_group_and_compare(self):
+        """그룹 비교하기"""
+        # 두 팀이 가진 스킬 비교
+        team_alpha = {"python", "java", "sql", "aws"}
+        team_beta = {"javascript", "react", "sql", "aws"}
+
+        # 공통 스킬
+        shared_skills = team_alpha & team_beta
+        assert shared_skills == {"sql", "aws"}
+
+        # alpha만의 스킬
+        alpha_unique = team_alpha - team_beta
+        assert alpha_unique == {"python", "java"}
+
+        # 어느 한 팀만 가진 스킬 (희소 스킬)
+        rare_skills = team_alpha ^ team_beta
+        assert rare_skills == {"python", "java", "javascript", "react"}
+
+    def test_filter_using_set(self):
+        """set을 이용한 빠른 필터링"""
+        all_users = ["alice", "bob", "charlie", "david", "eve"]
+        active_users = {"alice", "charlie", "eve"}
+
+        # 활성 사용자만 필터링
+        result = [user for user in all_users if user in active_users]
+        assert result == ["alice", "charlie", "eve"]
+
+        # 비활성 사용자만 필터링
+        inactive = [user for user in all_users if user not in active_users]
+        assert inactive == ["bob", "david"]
+        
